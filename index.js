@@ -21,6 +21,22 @@ axios.get(`https://api-music.inspare.cc/favourites/${music_key}`).then((d) => {
 	}
 
 	const download = (a) => {
+		if (a.youtube) {
+			console.log('YouTube video ' + a.id + ' started');
+			axios({
+				url: `https://api-music.inspare.cc/stream/${a.id}?type=yt`,
+				method: "get",
+				responseType: "stream"
+			}).then((res) => {
+				var write_stream = fs.createWriteStream(`${__dirname}/temp/${a.id}.m4a`);
+				res.data.pipe(write_stream);
+				write_stream.on('finish', () => {
+					i++;
+					download(tracks[i]);
+				});
+			});
+			return;
+		}
 		if (!a.id) return;
 		axios.get(`https://api-music.inspare.cc/track/${a.id}`).then((track) => {
 			console.log(`${a.artist.name} - ${a.title} Started`);
