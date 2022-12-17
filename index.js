@@ -21,6 +21,10 @@ axios.get(`https://api-music.inspare.cc/favourites/${music_key}`).then((d) => {
 	}
 
 	const download = (a) => {
+		if (fs.existsSync(`${__dirname}/temp/${a.id}.m4a`)) {
+			i++;
+			return download(tracks[i]);
+		}
 		if (a.youtube) {
 			console.log('YouTube video ' + a.id + ' started');
 			axios({
